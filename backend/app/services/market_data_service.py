@@ -6,7 +6,7 @@ import dbservice_client as dbs
 import pandas as pd
 
 from app.config import settings
-from app.db.session import wait_for_import
+from app.db.session import INGEST_LOCK, wait_for_import
 from app.db.tables import EOD_PRICES, FUNDAMENTALS, QUOTES, TRADES
 from app.services import eodhd_client
 
@@ -37,7 +37,7 @@ def refresh_eod_prices(
         for bar in history:
             rows.append(
                 {
-                    "date": bar["date"],
+                    "pxdate": bar["date"],
                     "symbol": symbol.upper(),
                     "exchange": exchange.upper(),
                     "open": bar.get("open"),
@@ -57,8 +57,9 @@ def refresh_eod_prices(
     filename = f"eod_prices_{uuid.uuid4().hex}.csv"
     df.to_csv(imports_dir / filename, index=False)
 
-    result = session.import_files(table=EOD_PRICES, path=filename, createTable=False, mode="merge")
-    wait_for_import(session, result)
+    with INGEST_LOCK:
+        result = session.import_files(table=EOD_PRICES, path=filename, createTable=False)
+        wait_for_import(session, result)
     return len(df)
 
 
@@ -84,8 +85,9 @@ def refresh_quotes(session: dbs.Session, pairs: list[tuple[str, str]]) -> int:
     if not records:
         return 0
 
-    result = session.import_data(table=QUOTES, data=records, insert_as="objects", mode="merge")
-    wait_for_import(session, result)
+    with INGEST_LOCK:
+        result = session.import_data(table=QUOTES, data=records, insert_as="objects")
+        wait_for_import(session, result)
     return len(records)
 
 
@@ -118,6 +120,7 @@ def refresh_fundamentals(session: dbs.Session, pairs: list[tuple[str, str]]) -> 
     if not records:
         return 0
 
-    result = session.import_data(table=FUNDAMENTALS, data=records, insert_as="objects", mode="merge")
-    wait_for_import(session, result)
+    with INGEST_LOCK:
+        result = session.import_data(table=FUNDAMENTALS, data=records, insert_as="objects")
+        wait_for_import(session, result)
     return len(records)

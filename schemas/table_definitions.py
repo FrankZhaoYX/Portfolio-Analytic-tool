@@ -28,11 +28,11 @@ TABLES = {
     "eod_prices": {
         "table": "eod_prices",
         "type": "partitioned",
-        "prtnCol": "date",
+        "prtnCol": "pxdate",
         "sortColsDisk": ["symbol"],
         "sortColsOrd": ["symbol"],
         "columns": [
-            {"name": "date", "type": "timestamp", "attrDisk": "parted"},
+            {"name": "pxdate", "type": "timestamp", "attrDisk": "parted"},
             {"name": "symbol", "type": "symbol", "attrMem": "grouped", "attrDisk": "parted"},
             {"name": "exchange", "type": "symbol"},
             {"name": "open", "type": "float"},

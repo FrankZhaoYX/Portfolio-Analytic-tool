@@ -10,25 +10,41 @@ from app.services.analytics_common import build_daily_valuation
 
 
 def _net_positions(session: dbs.Session) -> pd.DataFrame:
-    """Net qty and cost numerator per symbol, pushed to q since it's a simple aggregation."""
-    df = session.query_q(
-        query=(
-            "select sym:symbol, netqty:sum qty, costnumer:sum qty*price, "
-            "exch:last exchange by symbol from trades"
-        ),
-        return_as="pandas",
-    )
-    return df[df["netqty"].abs() > 1e-9] if not df.empty else df
+    """Net qty and cost numerator per symbol.
+
+    Aggregated in pandas rather than via SQL GROUP BY: trades is a partitioned
+    table (by tradedate), and this DB Service version's SQL GROUP BY aggregates
+    per-partition rather than globally, so a plain GROUP BY here silently
+    returns one row per trade date instead of one row per symbol.
+    """
+    df = session.query_sql(query=f"SELECT * FROM {TRADES}", return_as="pandas")
+    if df.empty:
+        return pd.DataFrame(columns=["symbol", "exch", "netqty", "costnumer"])
+
+    df["costvalue"] = df["qty"] * df["price"]
+    grouped = df.groupby("symbol").agg(
+        exch=("exchange", "last"),
+        netqty=("qty", "sum"),
+        costnumer=("costvalue", "sum"),
+    ).reset_index()
+    return grouped[grouped["netqty"].abs() > 1e-9]
 
 
 def _latest_prices(session: dbs.Session, symbols: list[str]) -> pd.DataFrame:
+    """Latest close per symbol, aggregated in pandas for the same partition reason as _net_positions."""
     if not symbols:
         return pd.DataFrame(columns=["symbol", "close"])
-    symlist = ",".join(f"`{s}" for s in symbols)
-    return session.query_q(
-        query=f"select last close by symbol from eod_prices where symbol in ({symlist})",
+    symlist = ",".join(f"'{s}'" for s in symbols)
+    df = session.query_sql(
+        query=f"SELECT symbol, pxdate, close FROM {EOD_PRICES} WHERE symbol IN ({symlist})",
         return_as="pandas",
     )
+    if df.empty:
+        return pd.DataFrame(columns=["symbol", "close"])
+
+    df["pxdate"] = pd.to_datetime(df["pxdate"])
+    latest = df.sort_values("pxdate").groupby("symbol").last().reset_index()
+    return latest[["symbol", "close"]]
 
 
 def get_positions(session: dbs.Session) -> list[Position]:
@@ -110,7 +126,7 @@ def get_pnl_history(session: dbs.Session, from_date: date | None = None) -> list
     if trades_df.empty:
         return []
 
-    symbols = ",".join(f"`{s}" for s in trades_df["symbol"].unique())
+    symbols = ",".join(f"'{s}'" for s in trades_df["symbol"].unique())
     prices_df = session.query_sql(
         query=f"SELECT * FROM {EOD_PRICES} WHERE symbol IN ({symbols})",
         return_as="pandas",

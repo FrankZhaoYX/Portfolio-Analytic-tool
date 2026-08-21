@@ -15,14 +15,14 @@ def _benchmark_series(session: dbs.Session, from_date: date, to_date: date) -> p
     df = session.query_sql(
         query=(
             f"SELECT * FROM {EOD_PRICES} WHERE symbol = '{bench_symbol.upper()}' "
-            f"AND date >= '{from_date.isoformat()}' AND date <= '{to_date.isoformat()}'"
+            f"AND pxdate >= '{from_date.isoformat()}' AND pxdate <= '{to_date.isoformat()}'"
         ),
         return_as="pandas",
     )
     if df.empty:
         return pd.Series(dtype=float)
-    df["date"] = pd.to_datetime(df["date"]).dt.normalize()
-    df = df.sort_values("date").set_index("date")
+    df["pxdate"] = pd.to_datetime(df["pxdate"]).dt.normalize()
+    df = df.sort_values("pxdate").set_index("pxdate")
     return df["close"] / df["close"].iloc[0] - 1.0
 
 
@@ -36,7 +36,7 @@ def get_performance_summary(
         today = date.today()
         return PerformanceSummary(twr=0.0, mwr=None, start_date=today, end_date=today, points=[])
 
-    symbols = ",".join(f"`{s}" for s in trades_df["symbol"].unique())
+    symbols = ",".join(f"'{s}'" for s in trades_df["symbol"].unique())
     prices_df = session.query_sql(
         query=f"SELECT * FROM {EOD_PRICES} WHERE symbol IN ({symbols})",
         return_as="pandas",
@@ -71,7 +71,8 @@ def get_performance_summary(
     end_date = valuation.index[-1].date()
     benchmark = _benchmark_series(session, start_date, end_date)
 
-    portfolio_cum = valuation["market_value"] / valuation["market_value"].iloc[0] - 1.0
+    portfolio_cum = (1.0 + returns).cumprod() - 1.0
+    portfolio_cum = portfolio_cum.reindex(valuation.index, fill_value=0.0)
     points = [
         PerformancePoint(
             as_of=idx.date(),

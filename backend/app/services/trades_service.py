@@ -6,7 +6,7 @@ import dbservice_client as dbs
 import pandas as pd
 
 from app.config import settings
-from app.db.session import wait_for_import
+from app.db.session import INGEST_LOCK, wait_for_import
 from app.db.tables import TRADES
 from app.models.trade import Side, TradeIn
 
@@ -31,8 +31,9 @@ def insert_trade(session: dbs.Session, trade: TradeIn) -> dict:
         "notes": trade.notes,
         "createdat": datetime.now(timezone.utc).isoformat(),
     }
-    result = session.import_data(table=TRADES, data=[record], insert_as="objects", mode="merge")
-    wait_for_import(session, result)
+    with INGEST_LOCK:
+        result = session.import_data(table=TRADES, data=[record], insert_as="objects")
+        wait_for_import(session, result)
     return record
 
 
@@ -62,8 +63,9 @@ def insert_trades_csv(session: dbs.Session, df: pd.DataFrame) -> int:
     filename = f"trades_upload_{uuid.uuid4().hex}.csv"
     df.to_csv(imports_dir / filename, index=False)
 
-    result = session.import_files(table=TRADES, path=filename, createTable=False, mode="merge")
-    wait_for_import(session, result)
+    with INGEST_LOCK:
+        result = session.import_files(table=TRADES, path=filename, createTable=False)
+        wait_for_import(session, result)
     return len(df)
 
 

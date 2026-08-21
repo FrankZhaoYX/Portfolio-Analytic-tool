@@ -25,7 +25,9 @@ def get_allocation(session: dbs.Session, dimension: AllocationDimension) -> Allo
             ),
             return_as="pandas",
         )
-        if not fundamentals_df.empty:
+        if fundamentals_df.empty:
+            fundamentals_df = pd.DataFrame(columns=["symbol", dimension.value, "asofdate"])
+        else:
             fundamentals_df = fundamentals_df.drop_duplicates(subset="symbol", keep="first")
         merged = pos_df.merge(fundamentals_df, on="symbol", how="left")
         merged[dimension.value] = merged[dimension.value].fillna("Unknown")

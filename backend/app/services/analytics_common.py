@@ -9,7 +9,7 @@ def build_daily_valuation(trades_df: pd.DataFrame, prices_df: pd.DataFrame) -> p
       - cash_flow: net investor cash flow that day (positive = buy/contribution, negative = sell/withdrawal)
     Used by both performance_service (TWR/MWR) and risk_service (return series).
     """
-    if trades_df.empty:
+    if trades_df.empty or prices_df.empty:
         return pd.DataFrame(columns=["market_value", "cash_flow"])
 
     trades = trades_df.copy()
@@ -17,14 +17,14 @@ def build_daily_valuation(trades_df: pd.DataFrame, prices_df: pd.DataFrame) -> p
     trades["symbol"] = trades["symbol"].str.upper()
 
     prices = prices_df.copy()
-    prices["date"] = pd.to_datetime(prices["date"]).dt.normalize()
+    prices["pxdate"] = pd.to_datetime(prices["pxdate"]).dt.normalize()
     prices["symbol"] = prices["symbol"].str.upper()
 
     start = trades["tradedate"].min()
-    end = max(prices["date"].max(), trades["tradedate"].max())
+    end = max(prices["pxdate"].max(), trades["tradedate"].max())
     all_dates = pd.date_range(start, end, freq="D")
 
-    price_wide = prices.pivot_table(index="date", columns="symbol", values="close")
+    price_wide = prices.pivot_table(index="pxdate", columns="symbol", values="close")
     price_wide = price_wide.reindex(all_dates).ffill()
 
     qty_by_day = trades.groupby(["tradedate", "symbol"])["qty"].sum().unstack(fill_value=0.0)

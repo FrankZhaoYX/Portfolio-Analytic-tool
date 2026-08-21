@@ -18,7 +18,7 @@ def get_risk_summary(session: dbs.Session) -> RiskSummary:
             var_historical_95=0.0, var_parametric_95=0.0,
         )
 
-    symbols = ",".join(f"`{s}" for s in trades_df["symbol"].unique())
+    symbols = ",".join(f"'{s}'" for s in trades_df["symbol"].unique())
     prices_df = session.query_sql(
         query=f"SELECT * FROM {EOD_PRICES} WHERE symbol IN ({symbols})",
         return_as="pandas",
@@ -61,7 +61,7 @@ def get_correlation_matrix(session: dbs.Session) -> CorrelationMatrix:
         return CorrelationMatrix(symbols=[], matrix=[])
 
     symbols = trades_df["symbol"].unique().tolist()
-    symlist = ",".join(f"`{s}" for s in symbols)
+    symlist = ",".join(f"'{s}'" for s in symbols)
     prices_df = session.query_sql(
         query=f"SELECT * FROM {EOD_PRICES} WHERE symbol IN ({symlist})",
         return_as="pandas",
@@ -69,8 +69,8 @@ def get_correlation_matrix(session: dbs.Session) -> CorrelationMatrix:
     if prices_df.empty:
         return CorrelationMatrix(symbols=symbols, matrix=[])
 
-    prices_df["date"] = pd.to_datetime(prices_df["date"]).dt.normalize()
-    wide = prices_df.pivot_table(index="date", columns="symbol", values="close").sort_index()
+    prices_df["pxdate"] = pd.to_datetime(prices_df["pxdate"]).dt.normalize()
+    wide = prices_df.pivot_table(index="pxdate", columns="symbol", values="close").sort_index()
     rets = wide.pct_change().dropna(how="all")
     corr = rets.corr().reindex(index=symbols, columns=symbols)
 
