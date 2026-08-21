@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+pandas
+numpy
+httpx
+python-multipart
+pyxirr
+
+# KX private package index - install with:
+#   pip install --pre --extra-index-url https://portal.dl.kx.com/assets/pypi/ kdbx_db_service_client
+kdbx_db_service_client

@@ -1,0 +1,10 @@
+.env
+*.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# db-service data (submodule already ignores its own build/data dirs, but be defensive)
+db-service/data/
