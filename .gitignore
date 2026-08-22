@@ -1,0 +1,14 @@
+.env
+*.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Claude Code / agent tooling local state
+.claude/
+.agents/
+
+# db-service data (submodule already ignores its own build/data dirs, but be defensive)
+db-service/data/
