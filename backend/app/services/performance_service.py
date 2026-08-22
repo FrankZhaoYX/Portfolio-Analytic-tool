@@ -6,8 +6,11 @@ from pyxirr import xirr
 
 from app.config import settings
 from app.db.tables import EOD_PRICES, TRADES
+from app.logging_config import get_logger
 from app.models.performance import PerformancePoint, PerformanceSummary
 from app.services.analytics_common import build_daily_valuation, daily_returns
+
+log = get_logger(__name__)
 
 
 def _benchmark_series(session: dbs.Session, from_date: date, to_date: date) -> pd.Series:
@@ -20,6 +23,15 @@ def _benchmark_series(session: dbs.Session, from_date: date, to_date: date) -> p
         return_as="pandas",
     )
     if df.empty:
+        # Silent until now: the chart just rendered a flat/absent benchmark line
+        # with no indication the symbol had never been ingested.
+        log.warning(
+            "No benchmark data for %s between %s and %s - run a market-data "
+            "refresh to ingest it, or change BENCHMARK_SYMBOL",
+            settings.benchmark_symbol,
+            from_date,
+            to_date,
+        )
         return pd.Series(dtype=float)
     df["pxdate"] = pd.to_datetime(df["pxdate"]).dt.normalize()
     df = df.sort_values("pxdate").set_index("pxdate")
@@ -64,7 +76,10 @@ def get_performance_summary(
     if len(flow_dates) >= 2 and any(a < 0 for a in flow_amounts) and any(a > 0 for a in flow_amounts):
         try:
             mwr = xirr(dict(zip(flow_dates, flow_amounts)))
-        except Exception:
+        except Exception as exc:
+            # XIRR legitimately fails to converge on some cash-flow shapes; the
+            # endpoint still returns (mwr=None), but don't hide why.
+            log.warning("XIRR did not converge over %d cash flows: %s", len(flow_dates), exc)
             mwr = None
 
     start_date = valuation.index[0].date()
