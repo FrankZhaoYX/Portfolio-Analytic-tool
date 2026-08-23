@@ -75,14 +75,25 @@ def wait_for_import(
 
         now = time.monotonic()
         if now >= next_progress:
-            # Escalate to WARNING: past ~15s a small ingest is not merely slow.
-            log.warning(
-                "Ingest job %s still '%s' after %.0fs (timeout %.0fs)",
-                job_id,
-                status,
-                elapsed,
-                timeout,
-            )
+            # 'processing' means the storage manager is actively writing partitions,
+            # which is simply slow for a large ingest - report it as progress. Only
+            # 'pending' (accepted but never started) indicates the stall that means
+            # the service needs recovering, so reserve WARNING for that.
+            if status == "processing":
+                log.info(
+                    "Ingest job %s still processing after %.0fs - large ingests write "
+                    "roughly one partition-day at a time",
+                    job_id,
+                    elapsed,
+                )
+            else:
+                log.warning(
+                    "Ingest job %s still '%s' after %.0fs (timeout %.0fs)",
+                    job_id,
+                    status,
+                    elapsed,
+                    timeout,
+                )
             next_progress = now + _PROGRESS_EVERY_SECONDS
 
         time.sleep(interval)

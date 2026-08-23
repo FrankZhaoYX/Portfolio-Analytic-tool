@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from pathlib import Path
 
 import dbservice_client as dbs
@@ -10,6 +10,7 @@ from app.db.session import INGEST_LOCK, wait_for_import
 from app.db.tables import EOD_PRICES, FUNDAMENTALS, QUOTES, TRADES
 from app.logging_config import get_logger
 from app.services import eodhd_client
+from app.timeutil import utc_now_iso
 
 log = get_logger(__name__)
 
@@ -95,7 +96,7 @@ def refresh_quotes(session: dbs.Session, pairs: list[tuple[str, str]]) -> int:
         log.warning("Quote refresh returned no data - nothing ingested")
         return 0
 
-    now = datetime.now(timezone.utc).isoformat()
+    now = utc_now_iso()
     records = [
         {
             "ts": now,

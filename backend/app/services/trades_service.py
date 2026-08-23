@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime, timezone
 from pathlib import Path
 
 import dbservice_client as dbs
@@ -10,6 +9,7 @@ from app.db.session import INGEST_LOCK, wait_for_import
 from app.db.tables import TRADES
 from app.logging_config import get_logger
 from app.models.trade import Side, TradeIn
+from app.timeutil import utc_now_iso
 
 log = get_logger(__name__)
 
@@ -32,7 +32,7 @@ def insert_trade(session: dbs.Session, trade: TradeIn) -> dict:
         "fees": trade.fees,
         "currency": trade.currency.upper(),
         "notes": trade.notes,
-        "createdat": datetime.now(timezone.utc).isoformat(),
+        "createdat": utc_now_iso(),
     }
     log.info(
         "Recording trade %s %s %s x%.4f @ %.4f",
@@ -66,7 +66,7 @@ def insert_trades_csv(session: dbs.Session, df: pd.DataFrame) -> int:
     df["notes"] = df.get("notes", "")
     df["notes"] = df["notes"].fillna("")
     df["tradeid"] = [str(uuid.uuid4()) for _ in range(len(df))]
-    df["createdat"] = datetime.now(timezone.utc).isoformat()
+    df["createdat"] = utc_now_iso()
 
     cols = ["tradeid", "tradedate", "symbol", "exchange", "side", "qty", "price", "fees", "currency", "notes", "createdat"]
     df = df[cols]

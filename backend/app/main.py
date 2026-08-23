@@ -7,7 +7,15 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.logging_config import get_logger, redact, request_id_var, setup_logging
-from app.routers import allocation, market_data, performance, positions, risk, trades
+from app.routers import (
+    allocation,
+    history,
+    market_data,
+    performance,
+    positions,
+    risk,
+    trades,
+)
 
 setup_logging()
 log = get_logger(__name__)
@@ -74,6 +82,7 @@ def log_startup_config() -> None:
 
 app.include_router(trades.router)
 app.include_router(market_data.router)
+app.include_router(history.router)
 app.include_router(positions.router)
 app.include_router(performance.router)
 app.include_router(risk.router)

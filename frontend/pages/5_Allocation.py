@@ -19,7 +19,7 @@ if breakdown and breakdown.get("slices"):
     with col2:
         st.dataframe(
             slices_df.style.format({"market_value": "${:,.2f}", "weight_pct": "{:.1f}%"}),
-            use_container_width=True,
+            width="stretch",
         )
 else:
     st.info("No allocation data yet. Enter trades and refresh market data first.")

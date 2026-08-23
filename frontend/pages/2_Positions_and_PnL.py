@@ -21,7 +21,7 @@ else:
                 "weight_pct": "{:.1f}%",
             }
         ),
-        use_container_width=True,
+        width="stretch",
     )
 
     total_mv = positions_df["market_value"].sum()

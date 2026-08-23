@@ -55,12 +55,16 @@ def get_performance_summary(
     )
 
     valuation = build_daily_valuation(trades_df, prices_df)
+    if valuation.empty:
+        today = date.today()
+        return PerformanceSummary(twr=0.0, mwr=None, start_date=today, end_date=today, points=[])
+
     if from_date:
         valuation = valuation[valuation.index >= pd.Timestamp(from_date)]
     if to_date:
         valuation = valuation[valuation.index <= pd.Timestamp(to_date)]
 
-    if valuation.empty:
+    if valuation.empty:          # keep this one too — the filter can empty it
         today = date.today()
         return PerformanceSummary(twr=0.0, mwr=None, start_date=today, end_date=today, points=[])
 
