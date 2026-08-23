@@ -34,7 +34,18 @@ def _benchmark_series(session: dbs.Session, from_date: date, to_date: date) -> p
         )
         return pd.Series(dtype=float)
     df["pxdate"] = pd.to_datetime(df["pxdate"]).dt.normalize()
-    df = df.sort_values("pxdate").set_index("pxdate")
+    # Re-ingesting an overlapping date range appends rather than replaces, so a
+    # symbol can hold several rows per day. Left in place, the duplicated index
+    # makes .loc[date] return a Series instead of a scalar further down.
+    before = len(df)
+    df = df.sort_values("pxdate").drop_duplicates(subset="pxdate", keep="last")
+    if len(df) < before:
+        log.warning(
+            "Benchmark %s had %d duplicate row(s) - using the last per day",
+            settings.benchmark_symbol,
+            before - len(df),
+        )
+    df = df.set_index("pxdate")
     return df["close"] / df["close"].iloc[0] - 1.0
 
 
@@ -92,11 +103,17 @@ def get_performance_summary(
 
     portfolio_cum = (1.0 + returns).cumprod() - 1.0
     portfolio_cum = portfolio_cum.reindex(valuation.index, fill_value=0.0)
+    # Look up through plain dicts: .loc on a duplicated index yields a Series
+    # rather than a scalar, and float() then fails at request time.
+    portfolio_map = portfolio_cum.to_dict()
+    benchmark_map = benchmark.to_dict()
     points = [
         PerformancePoint(
             as_of=idx.date(),
-            portfolio_cum_return=float(portfolio_cum.loc[idx]),
-            benchmark_cum_return=float(benchmark.loc[idx]) if idx in benchmark.index else None,
+            portfolio_cum_return=float(portfolio_map.get(idx, 0.0)),
+            benchmark_cum_return=(
+                float(benchmark_map[idx]) if idx in benchmark_map else None
+            ),
         )
         for idx in valuation.index
     ]
