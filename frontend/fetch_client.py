@@ -50,6 +50,35 @@ def get_coverage() -> pd.DataFrame:
         return pd.DataFrame()
 
 
+def list_symbols() -> list[str]:
+    """Symbols that have stored price history."""
+    try:
+        resp = requests.get(f"{BASE_URL}/api/market-data/symbols", timeout=READ_TIMEOUT)
+        resp.raise_for_status()
+        return resp.json()
+    except requests.RequestException as exc:
+        st.error(f"Could not load symbols: {_describe(exc)}")
+        return []
+
+
+def symbol_history(symbol: str, from_date=None, to_date=None) -> dict | None:
+    """Price series and stats for one symbol."""
+    params = {"symbol": symbol}
+    if from_date:
+        params["from_date"] = from_date.isoformat()
+    if to_date:
+        params["to_date"] = to_date.isoformat()
+    try:
+        resp = requests.get(
+            f"{BASE_URL}/api/market-data/history", params=params, timeout=READ_TIMEOUT
+        )
+        resp.raise_for_status()
+        return resp.json()
+    except requests.RequestException as exc:
+        st.error(f"Could not load history for {symbol}: {_describe(exc)}")
+        return None
+
+
 def fetch_history(
     symbols: list[str],
     from_date=None,

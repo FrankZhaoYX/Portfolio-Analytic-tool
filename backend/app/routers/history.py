@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 
 from app.dependencies import db_session
 from app.logging_config import get_logger
-from app.services import history_service
+from app.services import history_service, symbol_service
 
 log = get_logger(__name__)
 
@@ -44,6 +44,30 @@ def get_coverage(session: dbs.Session = Depends(db_session)):
     out["first"] = out["first"].astype(str)
     out["last"] = out["last"].astype(str)
     return out.to_dict(orient="records")
+
+
+@router.get("/symbols")
+def list_symbols(session: dbs.Session = Depends(db_session)):
+    """Symbols that have stored price history, for populating a picker."""
+    return symbol_service.available_symbols(session)
+
+
+@router.get("/history")
+def symbol_history(
+    symbol: str,
+    from_date: date | None = None,
+    to_date: date | None = None,
+    session: dbs.Session = Depends(db_session),
+):
+    """Price series and performance statistics for a single symbol.
+
+    This is the instrument's own performance over the window - it takes no
+    account of when or whether you held it.
+    """
+    if not symbol.strip():
+        raise HTTPException(status_code=400, detail="symbol is required")
+    ticker, _, _ = symbol.strip().partition(".")
+    return symbol_service.get_symbol_history(session, ticker, from_date, to_date)
 
 
 @router.post("/fetch")
