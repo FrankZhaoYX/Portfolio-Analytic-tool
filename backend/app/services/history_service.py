@@ -130,6 +130,43 @@ def build_plan(pairs, window_start: date, window_end: date, already=None):
     return plan, skipped
 
 
+# EODHD identifies an instrument as TICKER.EXCHANGE. A bare ticker defaults to
+# .US here, so anything listed elsewhere comes back empty unless the suffix is
+# given. These are the suffixes worth suggesting when a lookup finds nothing.
+COMMON_EXCHANGES = {
+    "US": "US (NYSE/NASDAQ/AMEX)",
+    "TO": "Toronto (TSX)",
+    "NEO": "Canada (NEO)",
+    "L": "London (LSE)",
+    "AS": "Amsterdam",
+    "PA": "Paris",
+    "F": "Frankfurt",
+    "DE": "XETRA",
+    "SW": "Swiss",
+    "HK": "Hong Kong",
+    "AU": "Australia (ASX)",
+    "TSE": "Tokyo",
+    "INDX": "indices, e.g. GSPC.INDX",
+    "FOREX": "FX pairs",
+    "CC": "crypto",
+}
+
+
+def no_data_hint(item: "FetchPlan") -> str:
+    """Explain an empty result, since EODHD returns 200 with [] rather than erroring."""
+    others = ", ".join(
+        f"{item.symbol}.{code}" for code in ("TO", "L", "AS", "DE", "HK", "AU") if code != item.exchange
+    )
+    known = COMMON_EXCHANGES.get(item.exchange)
+    where = f"{item.exchange} — {known}" if known else item.exchange
+    return (
+        f"EODHD returned no bars for {item.label} on exchange {where}. "
+        f"The ticker is most likely listed elsewhere: try {others}. "
+        "It may also be outside your plan's coverage, or have no trading "
+        "in the requested date range."
+    )
+
+
 def rows_from_bars(item: FetchPlan, bars: list[dict]) -> list[dict]:
     """Map EODHD's payload onto the eod_prices schema."""
     return [
@@ -153,6 +190,7 @@ def run_plan(session: dbs.Session, plan: list[FetchPlan]) -> dict:
     rows: list[dict] = []
     per_symbol: dict[str, int] = {}
     failed: dict[str, str] = {}
+    no_data: dict[str, str] = {}
 
     for item in plan:
         log.info("Fetching %s  %s -> %s", item.label, item.start, item.end)
@@ -164,6 +202,16 @@ def run_plan(session: dbs.Session, plan: list[FetchPlan]) -> dict:
             log.warning("  failed: %s", exc)
             failed[item.label] = str(exc)
             continue
+
+        if not bars:
+            # EODHD answers 200 with an empty list for a symbol it doesn't carry
+            # on this exchange - no exception to catch. Wrong exchange suffix is
+            # far and away the usual cause (VDY is .TO, not the .US default).
+            hint = no_data_hint(item)
+            log.warning("  no data returned for %s - %s", item.label, hint)
+            no_data[item.label] = hint
+            continue
+
         mapped = rows_from_bars(item, bars)
         per_symbol[item.label] = len(mapped)
         log.info("  %d bar(s)", len(mapped))
@@ -171,7 +219,13 @@ def run_plan(session: dbs.Session, plan: list[FetchPlan]) -> dict:
 
     if not rows:
         log.warning("Nothing fetched - nothing ingested")
-        return {"ingested": 0, "per_symbol": per_symbol, "failed": failed, "partition_days": 0}
+        return {
+            "ingested": 0,
+            "per_symbol": per_symbol,
+            "failed": failed,
+            "no_data": no_data,
+            "partition_days": 0,
+        }
 
     df = pd.DataFrame(rows).drop_duplicates(subset=["symbol", "pxdate"], keep="last")
     imports_dir = Path(settings.db_service_imports_dir)
@@ -194,5 +248,6 @@ def run_plan(session: dbs.Session, plan: list[FetchPlan]) -> dict:
         "ingested": int(len(df)),
         "per_symbol": per_symbol,
         "failed": failed,
+        "no_data": no_data,
         "partition_days": partition_days,
     }

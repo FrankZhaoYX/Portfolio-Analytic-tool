@@ -46,8 +46,13 @@ st.subheader("Fetch history")
 with st.form("fetch_form"):
     symbols_raw = st.text_input(
         "Symbols",
-        placeholder="TQQQ.US, QQQ.US, SPY",
-        help="Comma or space separated. A bare ticker assumes the US exchange.",
+        placeholder="TQQQ.US, VDY.TO, SPY",
+        help=(
+            "Comma or space separated, as TICKER.EXCHANGE. A bare ticker assumes "
+            "`.US`, so anything listed elsewhere needs its suffix — Toronto is "
+            "`.TO`, London `.L`, XETRA `.DE`, Hong Kong `.HK`, ASX `.AU`, "
+            "indices `.INDX`."
+        ),
     )
 
     col1, col2 = st.columns(2)
@@ -121,6 +126,7 @@ if do_preview or do_fetch:
                 render_plan(result)
 
                 failed = result.get("failed") or {}
+                no_data = result.get("no_data") or {}
                 per_symbol = result.get("per_symbol") or {}
                 ingested = result.get("ingested", 0)
 
@@ -136,8 +142,11 @@ if do_preview or do_fetch:
                         width="stretch",
                         hide_index=True,
                     )
-                elif not failed:
+                elif not failed and not no_data:
                     st.info("Nothing new to save.")
+
+                for label, message in no_data.items():
+                    st.warning(f"**{label}** — {message}")
 
                 for label, message in failed.items():
                     st.error(f"{label}: {message}")

@@ -73,6 +73,7 @@ def fetch_history(req: FetchRequest, session: dbs.Session = Depends(db_session))
         "ingested": 0,
         "per_symbol": {},
         "failed": {},
+        "no_data": {},
         "partition_days": 0,
     }
 
