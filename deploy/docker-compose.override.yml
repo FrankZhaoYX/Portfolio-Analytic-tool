@@ -1,0 +1,97 @@
+# Canonical copy — install into the submodule with:
+#
+#     cp deploy/docker-compose.override.yml db-service/
+#
+# It has to live at db-service/docker-compose.override.yml for Compose to pick
+# it up automatically, but the submodule is a vendored checkout of someone
+# else's repo: nothing there is versioned by us, and `git reset --hard` or
+# `git clean` inside it silently deletes the file. Keeping the source of truth
+# here means it survives that.
+#
+# Why the override exists
+# -----------------------
+# The upstream compose file bind-mounts ./data/db and ./data/rt from the macOS
+# filesystem. During ingest and at each hourly IDB rollover the DB Service
+# performs atomic swaps - renaming a directory or symlink over an existing name
+# (`current` -> a versioned dir, `sym`, `idbStatus`, and the numbered IDB
+# partition dirs).
+#
+# Those renames are not atomic across Docker Desktop's macOS file sharing.
+# Instead of replacing the name, the swap leaves a duplicate beside it using
+# macOS's collision suffix:
+#
+#     current 2      sym 3      idbStatus 2      rt 2      db 2
+#
+# Most are harmless clutter, but an empty "0 2" landing among the IDB's
+# numbered partition directories is fatal: the data-access process enumerates
+# that folder to find partitions, hits a name that is not a valid partition,
+# throws q's `part` error, and crash-loops. The symptom is distinctive and
+# misleading - the gateway keeps answering /tables (served from the storage
+# manager) while every real query hangs until it times out, because the process
+# that serves queries never stays alive long enough to answer one.
+#
+# Named volumes live inside the Linux VM, where rename(2) is genuinely atomic,
+# so the swaps land correctly and no duplicates are produced.
+#
+# Volume ownership
+# ----------------
+# A fresh named volume is created empty and owned by root, but every DB Service
+# container runs as uid 65534 (nobody), so the storage manager cannot create its
+# database and the gateway reports "Database not found connected to (...)".
+# The bind-mounted setup avoided this only because init-db.sh chmod 777'd the
+# host directory. kx-db-volume-init below does the equivalent for the volumes,
+# once, before anything else starts.
+#
+# Note
+# ----
+# data/imports and data/logs deliberately stay bind mounts: the backend writes
+# CSVs into imports from the host for import_files to pick up. Those paths are
+# write-then-read, never an atomic swap, so they are unaffected.
+#
+# Switching to named volumes starts from an empty database - they do not
+# inherit the bind-mounted data:
+#
+#     docker compose down && docker compose up -d
+#     python schemas/create_tables.py
+#
+# `docker compose down -v` deletes the named volumes. Use plain `down` to keep
+# your data.
+
+services:
+  # Runs to completion before the database starts; makes the volumes writable
+  # by uid 65534, which is what every DB Service container runs as.
+  kx-db-volume-init:
+    image: busybox
+    command: sh -c "chown -R 65534:65534 /db /s && chmod -R 777 /db /s"
+    volumes:
+      - kx-db-data:/db
+      - kx-rt-state:/s
+    restart: "no"
+
+  kx-db-rt:
+    volumes:
+      - kx-rt-state:/s
+    depends_on:
+      kx-db-volume-init:
+        condition: service_completed_successfully
+
+  kx-db-sm:
+    volumes:
+      - kx-db-data:/db
+      - ./data/imports:/imports
+      - ./data/logs:/logs
+    depends_on:
+      kx-db-volume-init:
+        condition: service_completed_successfully
+
+  kx-db-da:
+    volumes:
+      - kx-db-data:/db
+      - ./data/logs:/logs
+    depends_on:
+      kx-db-volume-init:
+        condition: service_completed_successfully
+
+volumes:
+  kx-db-data:
+  kx-rt-state:

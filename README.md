@@ -25,12 +25,34 @@ docker login -u <your-email> -p <bearer-token-from-portal.dl.kx.com/auth/token> 
 Get a Community Edition license at https://developer.kx.com/products/kdb-x/install, then in
 `db-service/.env` set `KDB_LICENSE_B64` to the base64-encoded license.
 
+Install the compose override before starting. It moves the database onto Docker
+named volumes; on the default bind mounts, macOS breaks the atomic directory
+swaps the DB Service performs during ingest and hourly rollover, which
+eventually corrupts the intraday database and wedges every query. The file
+explains the failure in full.
+
+```bash
+cp deploy/docker-compose.override.yml db-service/
+```
+
+`db-service/` is a vendored checkout of someone else's repo, so nothing in it is
+versioned here — `git reset --hard` or `git clean` inside the submodule deletes
+that file. `deploy/` holds the source of truth; re-run the copy if it goes
+missing. Check with `test -f db-service/docker-compose.override.yml`.
+
 ```bash
 cd db-service
 bash init-db.sh          # MUST run before docker compose up
 docker compose up -d
 docker compose ps        # all 6 containers should show Up
 curl -s http://localhost:8080/api/v0/tables   # [] once licensed and ready
+```
+
+If queries later hang while `/api/v0/tables` still answers, the intraday
+database has crash-looped. Check with:
+
+```bash
+docker logs kx-db-da --since 5m | grep -c "Error mounting database"
 ```
 
 ### 2. Create tables
