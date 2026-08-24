@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     benchmark_symbol: str = "GSPC.INDX"
     risk_free_rate: float = 0.0
 
+    # DEBUG surfaces per-symbol fetches and query timings; INFO is the default.
+    log_level: str = "INFO"
+    log_dir: str = str(REPO_ROOT / "logs")
+
     model_config = SettingsConfigDict(env_file=str(REPO_ROOT / ".env"), env_file_encoding="utf-8")
 
 

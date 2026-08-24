@@ -6,8 +6,11 @@ from pyxirr import xirr
 
 from app.config import settings
 from app.db.tables import EOD_PRICES, TRADES
+from app.logging_config import get_logger
 from app.models.performance import PerformancePoint, PerformanceSummary
 from app.services.analytics_common import build_daily_valuation, daily_returns
+
+log = get_logger(__name__)
 
 
 def _benchmark_series(session: dbs.Session, from_date: date, to_date: date) -> pd.Series:
@@ -20,9 +23,29 @@ def _benchmark_series(session: dbs.Session, from_date: date, to_date: date) -> p
         return_as="pandas",
     )
     if df.empty:
+        # Silent until now: the chart just rendered a flat/absent benchmark line
+        # with no indication the symbol had never been ingested.
+        log.warning(
+            "No benchmark data for %s between %s and %s - run a market-data "
+            "refresh to ingest it, or change BENCHMARK_SYMBOL",
+            settings.benchmark_symbol,
+            from_date,
+            to_date,
+        )
         return pd.Series(dtype=float)
     df["pxdate"] = pd.to_datetime(df["pxdate"]).dt.normalize()
-    df = df.sort_values("pxdate").set_index("pxdate")
+    # Re-ingesting an overlapping date range appends rather than replaces, so a
+    # symbol can hold several rows per day. Left in place, the duplicated index
+    # makes .loc[date] return a Series instead of a scalar further down.
+    before = len(df)
+    df = df.sort_values("pxdate").drop_duplicates(subset="pxdate", keep="last")
+    if len(df) < before:
+        log.warning(
+            "Benchmark %s had %d duplicate row(s) - using the last per day",
+            settings.benchmark_symbol,
+            before - len(df),
+        )
+    df = df.set_index("pxdate")
     return df["close"] / df["close"].iloc[0] - 1.0
 
 
@@ -43,12 +66,16 @@ def get_performance_summary(
     )
 
     valuation = build_daily_valuation(trades_df, prices_df)
+    if valuation.empty:
+        today = date.today()
+        return PerformanceSummary(twr=0.0, mwr=None, start_date=today, end_date=today, points=[])
+
     if from_date:
         valuation = valuation[valuation.index >= pd.Timestamp(from_date)]
     if to_date:
         valuation = valuation[valuation.index <= pd.Timestamp(to_date)]
 
-    if valuation.empty:
+    if valuation.empty:          # keep this one too — the filter can empty it
         today = date.today()
         return PerformanceSummary(twr=0.0, mwr=None, start_date=today, end_date=today, points=[])
 
@@ -64,7 +91,10 @@ def get_performance_summary(
     if len(flow_dates) >= 2 and any(a < 0 for a in flow_amounts) and any(a > 0 for a in flow_amounts):
         try:
             mwr = xirr(dict(zip(flow_dates, flow_amounts)))
-        except Exception:
+        except Exception as exc:
+            # XIRR legitimately fails to converge on some cash-flow shapes; the
+            # endpoint still returns (mwr=None), but don't hide why.
+            log.warning("XIRR did not converge over %d cash flows: %s", len(flow_dates), exc)
             mwr = None
 
     start_date = valuation.index[0].date()
@@ -73,11 +103,17 @@ def get_performance_summary(
 
     portfolio_cum = (1.0 + returns).cumprod() - 1.0
     portfolio_cum = portfolio_cum.reindex(valuation.index, fill_value=0.0)
+    # Look up through plain dicts: .loc on a duplicated index yields a Series
+    # rather than a scalar, and float() then fails at request time.
+    portfolio_map = portfolio_cum.to_dict()
+    benchmark_map = benchmark.to_dict()
     points = [
         PerformancePoint(
             as_of=idx.date(),
-            portfolio_cum_return=float(portfolio_cum.loc[idx]),
-            benchmark_cum_return=float(benchmark.loc[idx]) if idx in benchmark.index else None,
+            portfolio_cum_return=float(portfolio_map.get(idx, 0.0)),
+            benchmark_cum_return=(
+                float(benchmark_map[idx]) if idx in benchmark_map else None
+            ),
         )
         for idx in valuation.index
     ]

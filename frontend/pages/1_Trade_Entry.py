@@ -3,6 +3,7 @@ from datetime import date
 import streamlit as st
 
 import api_client
+import timefmt
 from components.sidebar import render_refresh_button
 
 st.set_page_config(page_title="Trade Entry", layout="wide")
@@ -67,6 +68,10 @@ with csv_tab:
 st.subheader("Recent Trades")
 trades_df = api_client.get_trades()
 if not trades_df.empty:
-    st.dataframe(trades_df)
+    # createdat is stored UTC; show it in Eastern. tradedate is left alone -
+    # it's a calendar date, and shifting it by timezone would move trades
+    # across day boundaries.
+    st.dataframe(timefmt.localize_frame(trades_df), width="stretch")
+    st.caption("Times shown in Eastern; stored in UTC.")
 else:
     st.info("No trades recorded yet.")

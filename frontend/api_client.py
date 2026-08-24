@@ -6,24 +6,49 @@ import streamlit as st
 
 BASE_URL = os.environ.get("FASTAPI_BASE_URL", "http://localhost:8000")
 
+READ_TIMEOUT = 60
+# Writes wait on a DB Service ingest. Those are slow on partitioned tables (a
+# year of EOD history takes minutes), so this has to exceed the backend's own
+# ingest timeout or the UI gives up on work that is still progressing fine.
+WRITE_TIMEOUT = 660
+
+
+def _describe(exc: requests.RequestException) -> str:
+    """Error text for the user, including the backend request id when present.
+
+    The id is the link between what the UI showed and the matching lines in
+    logs/backend.log.
+    """
+    response = getattr(exc, "response", None)
+    request_id = response.headers.get("X-Request-ID") if response is not None else None
+    if isinstance(exc, requests.Timeout):
+        detail = "timed out - the backend may be blocked on a stalled DB Service ingest"
+    elif isinstance(exc, requests.ConnectionError):
+        detail = f"could not reach the backend at {BASE_URL} - is uvicorn running?"
+    else:
+        detail = str(exc)
+    return f"{detail} (request id: {request_id})" if request_id else detail
+
 
 def _get(path: str, params: dict | None = None) -> dict | list:
     try:
-        resp = requests.get(f"{BASE_URL}{path}", params=params, timeout=30)
+        resp = requests.get(f"{BASE_URL}{path}", params=params, timeout=READ_TIMEOUT)
         resp.raise_for_status()
         return resp.json()
     except requests.RequestException as exc:
-        st.error(f"Request to {path} failed: {exc}")
+        st.error(f"Request to {path} failed: {_describe(exc)}")
         return {}
 
 
 def _post(path: str, json: dict | None = None, files=None) -> dict:
     try:
-        resp = requests.post(f"{BASE_URL}{path}", json=json, files=files, timeout=60)
+        resp = requests.post(
+            f"{BASE_URL}{path}", json=json, files=files, timeout=WRITE_TIMEOUT
+        )
         resp.raise_for_status()
         return resp.json()
     except requests.RequestException as exc:
-        st.error(f"Request to {path} failed: {exc}")
+        st.error(f"Request to {path} failed: {_describe(exc)}")
         return {}
 
 

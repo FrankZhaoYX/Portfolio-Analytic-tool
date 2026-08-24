@@ -10,7 +10,12 @@ def build_daily_valuation(trades_df: pd.DataFrame, prices_df: pd.DataFrame) -> p
     Used by both performance_service (TWR/MWR) and risk_service (return series).
     """
     if trades_df.empty or prices_df.empty:
-        return pd.DataFrame(columns=["market_value", "cash_flow"])
+        # DatetimeIndex, not the default RangeIndex: callers filter this frame
+        # by date, and comparing a RangeIndex to a Timestamp raises TypeError.
+        return pd.DataFrame(
+            {"market_value": pd.Series(dtype=float), "cash_flow": pd.Series(dtype=float)},
+            index=pd.DatetimeIndex([], name="date"),
+        )
 
     trades = trades_df.copy()
     trades["tradedate"] = pd.to_datetime(trades["tradedate"]).dt.normalize()
