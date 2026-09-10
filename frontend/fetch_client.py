@@ -61,6 +61,59 @@ def list_symbols() -> list[str]:
         return []
 
 
+def hedge_analysis(
+    y_symbol: str,
+    x_symbol: str,
+    from_date=None,
+    to_date=None,
+    test_fraction: float = 0.20,
+    rolling_window: int = 60,
+    discount: float = 0.70,
+) -> dict:
+    """Static vs rolling vs DLM hedge ratio for a pair, evaluated out of sample.
+
+    Returns {} on failure, having already surfaced the reason; the 422 case
+    (not enough overlapping history for the requested split) carries a usable
+    explanation from the backend, so pass it through rather than a generic
+    "request failed".
+    """
+    params = {
+        "y_symbol": y_symbol,
+        "x_symbol": x_symbol,
+        "test_fraction": test_fraction,
+        "rolling_window": rolling_window,
+        "discount": discount,
+    }
+    if from_date:
+        params["from_date"] = str(from_date)
+    if to_date:
+        params["to_date"] = str(to_date)
+    try:
+        resp = requests.get(
+            f"{BASE_URL}/api/hedge/analysis", params=params, timeout=READ_TIMEOUT
+        )
+        if resp.status_code == 422:
+            detail = resp.json().get("detail", {})
+            st.warning(detail.get("detail") or "Not enough overlapping history.")
+            return {}
+        resp.raise_for_status()
+        return resp.json()
+    except requests.RequestException as exc:
+        st.error(f"Could not run the hedge analysis: {_describe(exc)}")
+        return {}
+
+
+def list_universe() -> list[dict]:
+    """Stored symbols with their asset class: stock, etf, etp, or other."""
+    try:
+        resp = requests.get(f"{BASE_URL}/api/market-data/universe", timeout=READ_TIMEOUT)
+        resp.raise_for_status()
+        return resp.json()
+    except requests.RequestException as exc:
+        st.error(f"Could not load symbols: {_describe(exc)}")
+        return []
+
+
 def symbol_history(symbol: str, from_date=None, to_date=None) -> dict | None:
     """Price series and stats for one symbol."""
     params = {"symbol": symbol}

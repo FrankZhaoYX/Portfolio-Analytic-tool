@@ -1,0 +1,25 @@
+sym,exch,kind,note
+HXT,TO,etf,Global X S&P/TSX 60
+VAB,TO,etf,Vanguard Canadian Aggregate Bond
+VBAL,TO,etf,Vanguard Balanced ETF Portfolio
+VCN,TO,etf,Vanguard FTSE Canada All Cap
+VDY,TO,etf,Vanguard FTSE Canadian High Dividend
+VFV,TO,etf,Vanguard S&P 500 CAD
+VGRO,TO,etf,Vanguard Growth ETF Portfolio
+VUN,TO,etf,Vanguard US Total Market
+XAW,TO,etf,iShares Core MSCI All Country World ex Canada
+XBB,TO,etf,iShares Core Canadian Universe Bond
+XEI,TO,etf,iShares S&P/TSX Composite High Dividend
+XGD,TO,etf,iShares S&P/TSX Global Gold
+XIC,TO,etf,iShares Core S&P/TSX Capped Composite
+XIU,TO,etf,iShares S&P/TSX 60
+XQQ,TO,etf,iShares NASDAQ 100 CAD-hedged
+XRE,TO,etf,iShares S&P/TSX Capped REIT
+XSP,TO,etf,iShares Core S&P 500 CAD-hedged
+XUU,TO,etf,iShares Core S&P US Total Market
+ZAG,TO,etf,BMO Aggregate Bond
+ZCN,TO,etf,BMO S&P/TSX Capped Composite
+ZEB,TO,etf,BMO Equal Weight Banks
+ZRE,TO,etf,BMO Equal Weight REITs
+ZSP,TO,etf,BMO S&P 500
+ZWB,TO,etf,BMO Covered Call Cdn Banks

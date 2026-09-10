@@ -1,0 +1,504 @@
+sym,exch,kind,note
+A,US,stock,Agilent Technologies
+AAPL,US,stock,Apple Inc.
+ABBV,US,stock,AbbVie
+ABNB,US,stock,Airbnb
+ABT,US,stock,Abbott Laboratories
+ACGL,US,stock,Arch Capital Group
+ACN,US,stock,Accenture
+ADBE,US,stock,Adobe Inc.
+ADI,US,stock,Analog Devices
+ADM,US,stock,Archer Daniels Midland
+ADP,US,stock,Automatic Data Processing
+ADSK,US,stock,Autodesk
+AEE,US,stock,Ameren
+AEP,US,stock,American Electric Power
+AES,US,stock,AES Corporation
+AFL,US,stock,Aflac
+AIG,US,stock,American International Group
+AIZ,US,stock,Assurant
+AJG,US,stock,Arthur J. Gallagher & Co.
+AKAM,US,stock,Akamai Technologies
+ALB,US,stock,Albemarle Corporation
+ALGN,US,stock,Align Technology
+ALL,US,stock,Allstate
+ALLE,US,stock,Allegion
+AMAT,US,stock,Applied Materials
+AMCR,US,stock,Amcor
+AMD,US,stock,Advanced Micro Devices
+AME,US,stock,Ametek
+AMGN,US,stock,Amgen
+AMP,US,stock,Ameriprise Financial
+AMT,US,stock,American Tower
+AMZN,US,stock,Amazon
+ANET,US,stock,Arista Networks
+AON,US,stock,Aon plc
+AOS,US,stock,A. O. Smith
+APA,US,stock,APA Corporation
+APD,US,stock,Air Products
+APH,US,stock,Amphenol
+APO,US,stock,Apollo Global Management
+APP,US,stock,AppLovin
+APTV,US,stock,Aptiv
+ARE,US,stock,Alexandria Real Estate Equities
+ARES,US,stock,Ares Management
+ATO,US,stock,Atmos Energy
+AVGO,US,stock,Broadcom
+AVY,US,stock,Avery Dennison
+AWK,US,stock,American Water Works
+AXON,US,stock,Axon Enterprise
+AXP,US,stock,American Express
+AZO,US,stock,AutoZone
+BA,US,stock,Boeing
+BAC,US,stock,Bank of America
+BALL,US,stock,Ball Corporation
+BAX,US,stock,Baxter International
+BBY,US,stock,Best Buy
+BDX,US,stock,Becton Dickinson
+BEN,US,stock,Franklin Resources
+BF-B,US,stock,Brown–Forman
+BG,US,stock,Bunge Global
+BIIB,US,stock,Biogen
+BKNG,US,stock,Booking Holdings
+BKR,US,stock,Baker Hughes
+BLDR,US,stock,Builders FirstSource
+BLK,US,stock,BlackRock
+BMY,US,stock,Bristol Myers Squibb
+BNY,US,stock,BNY Mellon
+BR,US,stock,Broadridge Financial Solutions
+BRK-B,US,stock,Berkshire Hathaway
+BRO,US,stock,Brown & Brown
+BSX,US,stock,Boston Scientific
+BX,US,stock,Blackstone Inc.
+BXP,US,stock,BXP  Inc.
+C,US,stock,Citigroup
+CAH,US,stock,Cardinal Health
+CARR,US,stock,Carrier Global
+CASY,US,stock,Casey's
+CAT,US,stock,Caterpillar Inc.
+CB,US,stock,Chubb Limited
+CBOE,US,stock,Cboe Global Markets
+CBRE,US,stock,CBRE Group
+CCI,US,stock,Crown Castle
+CCL,US,stock,Carnival Corporation
+CDNS,US,stock,Cadence Design Systems
+CDW,US,stock,CDW Corporation
+CEG,US,stock,Constellation Energy
+CF,US,stock,CF Industries
+CFG,US,stock,Citizens Financial Group
+CHD,US,stock,Church & Dwight
+CHRW,US,stock,C.H. Robinson
+CHTR,US,stock,Charter Communications
+CI,US,stock,Cigna
+CIEN,US,stock,Ciena
+CINF,US,stock,Cincinnati Financial
+CL,US,stock,Colgate-Palmolive
+CLX,US,stock,Clorox
+CMCSA,US,stock,Comcast
+CME,US,stock,CME Group
+CMG,US,stock,Chipotle Mexican Grill
+CMI,US,stock,Cummins
+CMS,US,stock,CMS Energy
+CNC,US,stock,Centene Corporation
+CNP,US,stock,CenterPoint Energy
+COF,US,stock,Capital One
+COHR,US,stock,Coherent Corp.
+COIN,US,stock,Coinbase
+COO,US,stock,Cooper Companies (The)
+COP,US,stock,ConocoPhillips
+COR,US,stock,Cencora
+COST,US,stock,Costco
+CPAY,US,stock,Corpay
+CPRT,US,stock,Copart
+CPT,US,stock,Camden Property Trust
+CRH,US,stock,CRH plc
+CRL,US,stock,Charles River Laboratories
+CRM,US,stock,Salesforce
+CRWD,US,stock,CrowdStrike
+CSCO,US,stock,Cisco
+CSGP,US,stock,CoStar Group
+CSX,US,stock,CSX Corporation
+CTAS,US,stock,Cintas
+CTSH,US,stock,Cognizant
+CTVA,US,stock,Corteva
+CVNA,US,stock,Carvana
+CVS,US,stock,CVS Health
+CVX,US,stock,Chevron Corporation
+D,US,stock,Dominion Energy
+DAL,US,stock,Delta Air Lines
+DASH,US,stock,DoorDash
+DD,US,stock,DuPont
+DDOG,US,stock,Datadog
+DE,US,stock,Deere & Company
+DECK,US,stock,Deckers Brands
+DELL,US,stock,Dell Technologies
+DG,US,stock,Dollar General
+DGX,US,stock,Quest Diagnostics
+DHI,US,stock,D. R. Horton
+DHR,US,stock,Danaher Corporation
+DIS,US,stock,Walt Disney Company (The)
+DLR,US,stock,Digital Realty
+DLTR,US,stock,Dollar Tree
+DOC,US,stock,Healthpeak Properties
+DOV,US,stock,Dover Corporation
+DOW,US,stock,Dow Inc.
+DPZ,US,stock,Domino's
+DRI,US,stock,Darden Restaurants
+DTE,US,stock,DTE Energy
+DUK,US,stock,Duke Energy
+DVA,US,stock,DaVita
+DVN,US,stock,Devon Energy
+DXCM,US,stock,Dexcom
+EBAY,US,stock,eBay Inc.
+ECHO,US,stock,EchoStar
+ECL,US,stock,Ecolab
+ED,US,stock,Consolidated Edison
+EFX,US,stock,Equifax
+EG,US,stock,Everest Group
+EIX,US,stock,Edison International
+EL,US,stock,Estée Lauder Companies (The)
+ELV,US,stock,Elevance Health
+EME,US,stock,Emcor
+EMR,US,stock,Emerson Electric
+EOG,US,stock,EOG Resources
+EQIX,US,stock,Equinix
+EQT,US,stock,EQT Corporation
+ERIE,US,stock,Erie Indemnity
+ES,US,stock,Eversource Energy
+ESS,US,stock,Essex Property Trust
+ETN,US,stock,Eaton Corporation
+ETR,US,stock,Entergy
+EVRG,US,stock,Evergy
+EW,US,stock,Edwards Lifesciences
+EXC,US,stock,Exelon
+EXE,US,stock,Expand Energy
+EXPD,US,stock,Expeditors International
+EXPE,US,stock,Expedia Group
+EXR,US,stock,Extra Space Storage
+F,US,stock,Ford Motor Company
+FANG,US,stock,Diamondback Energy
+FAST,US,stock,Fastenal
+FCX,US,stock,Freeport-McMoRan
+FDS,US,stock,FactSet
+FDX,US,stock,FedEx
+FDXF,US,stock,FedEx Freight
+FE,US,stock,FirstEnergy
+FERG,US,stock,Ferguson Enterprises
+FFIV,US,stock,F5  Inc.
+FICO,US,stock,Fair Isaac
+FIS,US,stock,Fidelity National Information Services
+FISV,US,stock,Fiserv
+FITB,US,stock,Fifth Third Bancorp
+FIX,US,stock,Comfort Systems USA
+FLEX,US,stock,Flex Ltd.
+FOX,US,stock,Fox Corporation (Class B)
+FOXA,US,stock,Fox Corporation (Class A)
+FRT,US,stock,Federal Realty Investment Trust
+FSLR,US,stock,First Solar
+FTNT,US,stock,Fortinet
+FTV,US,stock,Fortive
+GD,US,stock,General Dynamics
+GDDY,US,stock,GoDaddy
+GE,US,stock,GE Aerospace
+GEHC,US,stock,GE HealthCare
+GEN,US,stock,Gen Digital
+GEV,US,stock,GE Vernova
+GILD,US,stock,Gilead Sciences
+GIS,US,stock,General Mills
+GL,US,stock,Globe Life
+GLW,US,stock,Corning Inc.
+GM,US,stock,General Motors
+GNRC,US,stock,Generac
+GOOG,US,stock,Alphabet Inc. (Class C)
+GOOGL,US,stock,Alphabet Inc. (Class A)
+GPC,US,stock,Genuine Parts Company
+GPN,US,stock,Global Payments
+GRMN,US,stock,Garmin
+GS,US,stock,Goldman Sachs
+GWW,US,stock,W. W. Grainger
+HAL,US,stock,Halliburton
+HAS,US,stock,Hasbro
+HBAN,US,stock,Huntington Bancshares
+HCA,US,stock,HCA Healthcare
+HD,US,stock,Home Depot (The)
+HIG,US,stock,Hartford (The)
+HII,US,stock,Huntington Ingalls Industries
+HLT,US,stock,Hilton Worldwide
+HON,US,stock,Honeywell Technologies
+HONA,US,stock,Honeywell Aerospace
+HOOD,US,stock,Robinhood Markets
+HPE,US,stock,Hewlett Packard Enterprise
+HPQ,US,stock,HP Inc.
+HRL,US,stock,Hormel Foods
+HSIC,US,stock,Henry Schein
+HST,US,stock,Host Hotels & Resorts
+HSY,US,stock,Hershey Company (The)
+HUBB,US,stock,Hubbell Incorporated
+HUM,US,stock,Humana
+HWM,US,stock,Howmet Aerospace
+IBKR,US,stock,Interactive Brokers
+IBM,US,stock,IBM
+ICE,US,stock,Intercontinental Exchange
+IDXX,US,stock,Idexx Laboratories
+IEX,US,stock,IDEX Corporation
+IFF,US,stock,International Flavors & Fragrances
+INCY,US,stock,Incyte
+INTC,US,stock,Intel
+INTU,US,stock,Intuit
+INVH,US,stock,Invitation Homes
+IP,US,stock,International Paper
+IQV,US,stock,IQVIA
+IR,US,stock,Ingersoll Rand
+IRM,US,stock,Iron Mountain
+ISRG,US,stock,Intuitive Surgical
+IT,US,stock,Gartner
+ITW,US,stock,Illinois Tool Works
+IVZ,US,stock,Invesco
+J,US,stock,Jacobs Solutions
+JBHT,US,stock,J.B. Hunt
+JBL,US,stock,Jabil
+JCI,US,stock,Johnson Controls
+JKHY,US,stock,Jack Henry & Associates
+JNJ,US,stock,Johnson & Johnson
+JPM,US,stock,JPMorgan Chase
+KDP,US,stock,Keurig Dr Pepper
+KEY,US,stock,KeyCorp
+KEYS,US,stock,Keysight Technologies
+KHC,US,stock,Kraft Heinz
+KIM,US,stock,Kimco Realty
+KKR,US,stock,KKR & Co.
+KLAC,US,stock,KLA Corporation
+KMB,US,stock,Kimberly-Clark
+KMI,US,stock,Kinder Morgan
+KO,US,stock,Coca-Cola Company (The)
+KR,US,stock,Kroger
+KVUE,US,stock,Kenvue
+L,US,stock,Loews Corporation
+LDOS,US,stock,Leidos
+LEN,US,stock,Lennar
+LH,US,stock,Labcorp
+LHX,US,stock,L3Harris
+LII,US,stock,Lennox International
+LIN,US,stock,Linde plc
+LITE,US,stock,Lumentum
+LLY,US,stock,Lilly (Eli)
+LMT,US,stock,Lockheed Martin
+LNT,US,stock,Alliant Energy
+LOW,US,stock,Lowe's
+LRCX,US,stock,Lam Research
+LULU,US,stock,Lululemon Athletica
+LUV,US,stock,Southwest Airlines
+LVS,US,stock,Las Vegas Sands
+LYB,US,stock,LyondellBasell
+LYV,US,stock,Live Nation Entertainment
+MA,US,stock,Mastercard
+MAA,US,stock,Mid-America Apartment Communities
+MAR,US,stock,Marriott International
+MAS,US,stock,Masco
+MCD,US,stock,McDonald's
+MCHP,US,stock,Microchip Technology
+MCK,US,stock,McKesson Corporation
+MCO,US,stock,Moody's Corporation
+MDLZ,US,stock,Mondelez International
+MDT,US,stock,Medtronic
+MET,US,stock,MetLife
+META,US,stock,Meta Platforms
+MGM,US,stock,MGM Resorts
+MKC,US,stock,McCormick & Company
+MLM,US,stock,Martin Marietta Materials
+MMM,US,stock,3M
+MNST,US,stock,Monster Beverage
+MO,US,stock,Altria
+MOS,US,stock,Mosaic Company (The)
+MPC,US,stock,Marathon Petroleum
+MPWR,US,stock,Monolithic Power Systems
+MRK,US,stock,Merck & Co.
+MRNA,US,stock,Moderna
+MRSH,US,stock,Marsh McLennan
+MRVL,US,stock,Marvell Technology
+MS,US,stock,Morgan Stanley
+MSCI,US,stock,MSCI
+MSFT,US,stock,Microsoft
+MSI,US,stock,Motorola Solutions
+MTB,US,stock,M&T Bank
+MTD,US,stock,Mettler Toledo
+MU,US,stock,Micron Technology
+NCLH,US,stock,Norwegian Cruise Line Holdings
+NDAQ,US,stock,Nasdaq  Inc.
+NDSN,US,stock,Nordson Corporation
+NEE,US,stock,NextEra Energy
+NEM,US,stock,Newmont
+NFLX,US,stock,Netflix
+NI,US,stock,NiSource
+NKE,US,stock,Nike  Inc.
+NOC,US,stock,Northrop Grumman
+NOW,US,stock,ServiceNow
+NRG,US,stock,NRG Energy
+NSC,US,stock,Norfolk Southern
+NTAP,US,stock,NetApp
+NTRS,US,stock,Northern Trust
+NUE,US,stock,Nucor
+NVDA,US,stock,Nvidia
+NVR,US,stock,NVR  Inc.
+NWS,US,stock,News Corp (Class B)
+NWSA,US,stock,News Corp (Class A)
+NXPI,US,stock,NXP Semiconductors
+O,US,stock,Realty Income
+ODFL,US,stock,Old Dominion
+OKE,US,stock,Oneok
+OMC,US,stock,Omnicom Group
+ON,US,stock,ON Semiconductor
+ORCL,US,stock,Oracle Corporation
+ORLY,US,stock,O'Reilly Automotive
+OTIS,US,stock,Otis Worldwide
+OXY,US,stock,Occidental Petroleum
+PANW,US,stock,Palo Alto Networks
+PAYX,US,stock,Paychex
+PCAR,US,stock,Paccar
+PCG,US,stock,PG&E Corporation
+PEG,US,stock,Public Service Enterprise Group
+PEP,US,stock,PepsiCo
+PFE,US,stock,Pfizer
+PFG,US,stock,Principal Financial Group
+PG,US,stock,Procter & Gamble
+PGR,US,stock,Progressive Corporation
+PH,US,stock,Parker Hannifin
+PHM,US,stock,PulteGroup
+PKG,US,stock,Packaging Corporation of America
+PLD,US,stock,Prologis
+PLTR,US,stock,Palantir Technologies
+PM,US,stock,Philip Morris International
+PNC,US,stock,PNC Financial Services
+PNR,US,stock,Pentair
+PNW,US,stock,Pinnacle West Capital
+PODD,US,stock,Insulet Corporation
+PPG,US,stock,PPG Industries
+PPL,US,stock,PPL Corporation
+PRU,US,stock,Prudential Financial
+PSA,US,stock,Public Storage
+PSKY,US,stock,Paramount Skydance Corporation
+PSX,US,stock,Phillips 66
+PTC,US,stock,PTC Inc.
+PWR,US,stock,Quanta Services
+PYPL,US,stock,PayPal
+Q,US,stock,Qnity Electronics
+QCOM,US,stock,Qualcomm
+RCL,US,stock,Royal Caribbean Group
+RDDT,US,stock,Reddit
+REG,US,stock,Regency Centers
+REGN,US,stock,Regeneron Pharmaceuticals
+RF,US,stock,Regions Financial Corporation
+RJF,US,stock,Raymond James Financial
+RL,US,stock,Ralph Lauren Corporation
+RMD,US,stock,ResMed|
+ROK,US,stock,Rockwell Automation
+ROL,US,stock,Rollins  Inc.
+ROP,US,stock,Roper Technologies
+ROST,US,stock,Ross Stores
+RSG,US,stock,Republic Services
+RTX,US,stock,RTX Corporation
+RVTY,US,stock,Revvity
+SBAC,US,stock,SBA Communications
+SBUX,US,stock,Starbucks
+SCHW,US,stock,Charles Schwab Corporation
+SHW,US,stock,Sherwin-Williams
+SJM,US,stock,J.M. Smucker Company (The)
+SLB,US,stock,Schlumberger
+SMCI,US,stock,Supermicro
+SNA,US,stock,Snap-on
+SNDK,US,stock,Sandisk
+SNPS,US,stock,Synopsys
+SO,US,stock,Southern Company
+SOLV,US,stock,Solventum
+SPG,US,stock,Simon Property Group
+SPGI,US,stock,S&P Global
+SRE,US,stock,Sempra
+STE,US,stock,Steris
+STLD,US,stock,Steel Dynamics
+STT,US,stock,State Street Corporation
+STX,US,stock,Seagate Technology
+STZ,US,stock,Constellation Brands
+SW,US,stock,Smurfit Westrock
+SWK,US,stock,Stanley Black & Decker
+SWKS,US,stock,Skyworks Solutions
+SYF,US,stock,Synchrony Financial
+SYK,US,stock,Stryker Corporation
+SYY,US,stock,Sysco
+T,US,stock,AT&T
+TAP,US,stock,Molson Coors Beverage Company
+TDG,US,stock,TransDigm Group
+TDY,US,stock,Teledyne Technologies
+TECH,US,stock,Bio-Techne
+TEL,US,stock,TE Connectivity
+TER,US,stock,Teradyne
+TFC,US,stock,Truist Financial
+TGT,US,stock,Target Corporation
+TJX,US,stock,TJX Companies
+TKO,US,stock,TKO Group Holdings
+TMO,US,stock,Thermo Fisher Scientific
+TMUS,US,stock,T-Mobile US
+TPL,US,stock,Texas Pacific Land Corporation
+TPR,US,stock,Tapestry  Inc.
+TRGP,US,stock,Targa Resources
+TRMB,US,stock,Trimble Inc.
+TROW,US,stock,T. Rowe Price
+TRV,US,stock,Travelers Companies (The)
+TSCO,US,stock,Tractor Supply
+TSLA,US,stock,Tesla  Inc.
+TSN,US,stock,Tyson Foods
+TT,US,stock,Trane Technologies
+TTD,US,stock,Trade Desk (The)
+TTWO,US,stock,Take-Two Interactive
+TXN,US,stock,Texas Instruments
+TXT,US,stock,Textron
+TYL,US,stock,Tyler Technologies
+UAL,US,stock,United Airlines Holdings
+UBER,US,stock,Uber
+UDR,US,stock,UDR  Inc.
+UHS,US,stock,Universal Health Services
+ULTA,US,stock,Ulta Beauty
+UNH,US,stock,UnitedHealth Group
+UNP,US,stock,Union Pacific Corporation
+UPS,US,stock,United Parcel Service
+URI,US,stock,United Rentals
+USB,US,stock,U.S. Bancorp
+V,US,stock,Visa Inc.
+VEEV,US,stock,Veeva Systems
+VICI,US,stock,Vici Properties
+VLO,US,stock,Valero Energy
+VLTO,US,stock,Veralto
+VMC,US,stock,Vulcan Materials Company
+VMRK,US,stock,Vivmark Residential
+VRSK,US,stock,Verisk Analytics
+VRSN,US,stock,Verisign
+VRT,US,stock,Vertiv
+VRTX,US,stock,Vertex Pharmaceuticals
+VST,US,stock,Vistra Corp.
+VTR,US,stock,Ventas
+VTRS,US,stock,Viatris
+VZ,US,stock,Verizon
+WAB,US,stock,Wabtec
+WAT,US,stock,Waters Corporation
+WBD,US,stock,Warner Bros. Discovery
+WDAY,US,stock,Workday  Inc.
+WDC,US,stock,Western Digital
+WEC,US,stock,WEC Energy Group
+WELL,US,stock,Welltower
+WFC,US,stock,Wells Fargo
+WM,US,stock,Waste Management
+WMB,US,stock,Williams Companies
+WMT,US,stock,Walmart
+WRB,US,stock,W. R. Berkley Corporation
+WSM,US,stock,Williams-Sonoma  Inc.
+WST,US,stock,West Pharmaceutical Services
+WTW,US,stock,Willis Towers Watson
+WY,US,stock,Weyerhaeuser
+WYNN,US,stock,Wynn Resorts
+XEL,US,stock,Xcel Energy
+XOM,US,stock,ExxonMobil
+XYL,US,stock,Xylem Inc.
+XYZ,US,stock,Block  Inc.
+YUM,US,stock,Yum! Brands
+ZBH,US,stock,Zimmer Biomet
+ZBRA,US,stock,Zebra Technologies
+ZTS,US,stock,Zoetis
