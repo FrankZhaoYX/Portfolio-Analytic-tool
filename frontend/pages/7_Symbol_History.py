@@ -7,55 +7,94 @@ import fetch_client
 
 st.set_page_config(page_title="Symbol history", layout="wide")
 
-# --- sidebar: pick what to review -----------------------------------------
+# --- control bar: pick what to review --------------------------------------
+# These controls drive this page and nothing else, so they belong at the top
+# of the main area rather than the sidebar, which stays reserved for
+# app-level navigation. Title and controls render before the fetch below so
+# the page paints immediately instead of after the round trip.
 
-symbols = fetch_client.list_symbols()
+st.title("Symbol history")
 
-st.sidebar.header("Review a symbol", divider="gray")
+universe = fetch_client.list_universe()
 
-if not symbols:
-    st.sidebar.info("No price history stored yet.")
-    st.title("Symbol history")
+if not universe:
     st.info(
         "No price history stored yet. Use **Add stock data** to pull some, "
         "then come back here."
     )
     st.stop()
 
-symbol = st.sidebar.selectbox(
-    "Symbol",
-    symbols,
-    help="Every symbol with stored price history.",
-)
+# Group once, so each asset class keeps its own picker list and can show its
+# own count. The class comes from data/universe/*.csv, not from eod_prices,
+# which stores no asset-class column.
+_LABELS = {"stock": "Stocks", "etf": "ETFs", "etp": "ETPs", "other": "Other"}
+_ORDER = ["stock", "etf", "etp", "other"]
+
+by_kind: dict[str, list[str]] = {}
+for row in universe:
+    by_kind.setdefault(row["kind"], []).append(row["symbol"])
+for group in by_kind.values():
+    group.sort()
+
+all_symbols = sorted(row["symbol"] for row in universe)
+# Only offer classes that actually have stored history, so the bar does not
+# advertise an empty filter.
+present = [k for k in _ORDER if by_kind.get(k)]
 
 today = date.today()
-period = st.sidebar.selectbox(
-    "Period",
-    ["1 month", "3 months", "6 months", "1 year", "Year to date", "All stored", "Custom"],
-    index=3,
-)
-
 _offsets = {
     "1 month": timedelta(days=31),
     "3 months": timedelta(days=92),
     "6 months": timedelta(days=183),
     "1 year": timedelta(days=365),
 }
-if period == "Custom":
-    from_date = st.sidebar.date_input("From", value=today - timedelta(days=365))
-    to_date = st.sidebar.date_input("To", value=today)
-elif period == "Year to date":
-    from_date, to_date = date(today.year, 1, 1), today
-elif period == "All stored":
-    from_date, to_date = None, None
-else:
-    from_date, to_date = today - _offsets[period], today
+
+with st.container(horizontal=True, vertical_alignment="bottom", border=True):
+    kind = st.segmented_control(
+        "Asset class",
+        ["all", *present],
+        default="all",
+        required=True,
+        format_func=lambda k: (
+            f"All ({len(all_symbols)})" if k == "all"
+            else f"{_LABELS[k]} ({len(by_kind[k])})"
+        ),
+        help=(
+            "ETPs are commodity trusts and leveraged/inverse products, which "
+            "are not conventional ETFs. A ticker in both lists is filed under "
+            "the narrower class, so GLD counts as an ETP."
+        ),
+    )
+    # Switching class narrows the list; if the current pick is not in the new
+    # one, Streamlit falls back to its first entry.
+    choices = all_symbols if kind == "all" else by_kind[kind]
+    symbol = st.selectbox(
+        "Symbol",
+        choices,
+        help="Every symbol with stored price history.",
+        width=240,
+    )
+    period = st.selectbox(
+        "Period",
+        ["1 month", "3 months", "6 months", "1 year", "Year to date", "All stored", "Custom"],
+        index=3,
+        width=200,
+    )
+    # The custom range inputs sit in the same bar and only exist when chosen;
+    # the block runs top to bottom, so they appear beside Period, not below.
+    if period == "Custom":
+        from_date = st.date_input("From", value=today - timedelta(days=365), width=170)
+        to_date = st.date_input("To", value=today, width=170)
+    elif period == "Year to date":
+        from_date, to_date = date(today.year, 1, 1), today
+    elif period == "All stored":
+        from_date, to_date = None, None
+    else:
+        from_date, to_date = today - _offsets[period], today
 
 # --- load ------------------------------------------------------------------
 
 data = fetch_client.symbol_history(symbol, from_date, to_date)
-
-st.title("Symbol history")
 
 if not data or not data.get("series"):
     st.warning(

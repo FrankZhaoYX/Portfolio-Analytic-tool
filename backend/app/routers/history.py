@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 
 from app.dependencies import db_session
 from app.logging_config import get_logger
-from app.services import history_service, symbol_service
+from app.services import history_service, symbol_service, universe_service
 
 log = get_logger(__name__)
 
@@ -50,6 +50,17 @@ def get_coverage(session: dbs.Session = Depends(db_session)):
 def list_symbols(session: dbs.Session = Depends(db_session)):
     """Symbols that have stored price history, for populating a picker."""
     return symbol_service.available_symbols(session)
+
+
+@router.get("/universe")
+def list_universe(session: dbs.Session = Depends(db_session)):
+    """Stored symbols paired with their asset class, for grouping a picker.
+
+    Separate from `/symbols` because the asset class comes from the universe
+    CSVs rather than from `eod_prices`, which stores no such column. Symbols
+    that appear in no universe file come back as "other".
+    """
+    return universe_service.classify(symbol_service.available_symbols(session))
 
 
 @router.get("/history")
