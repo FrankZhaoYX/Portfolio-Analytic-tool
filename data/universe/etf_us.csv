@@ -1,0 +1,31 @@
+sym,exch,kind,note
+SPY,US,etf,S&P 500 - largest and most traded ETF
+IVV,US,etf,S&P 500 - iShares
+VOO,US,etf,S&P 500 - Vanguard
+VTI,US,etf,Total US market
+QQQ,US,etf,NASDAQ 100
+VEA,US,etf,Developed markets ex-US
+IEFA,US,etf,Developed markets ex-US - iShares
+VTV,US,etf,US large-cap value
+VUG,US,etf,US large-cap growth
+BND,US,etf,Total US bond market
+AGG,US,etf,US aggregate bond
+IJH,US,etf,S&P mid-cap 400
+IJR,US,etf,S&P small-cap 600
+VWO,US,etf,Emerging markets - Vanguard
+IEMG,US,etf,Emerging markets - iShares
+VIG,US,etf,Dividend appreciation
+VXUS,US,etf,Total international stock
+VO,US,etf,US mid-cap
+VB,US,etf,US small-cap
+GLD,US,etf,Gold bullion
+IWM,US,etf,Russell 2000
+EFA,US,etf,EAFE developed markets
+EEM,US,etf,Emerging markets - iShares MSCI
+TLT,US,etf,20+ year Treasuries
+HYG,US,etf,High yield corporate bonds
+LQD,US,etf,Investment grade corporate bonds
+XLK,US,etf,Technology sector
+XLF,US,etf,Financials sector
+XLE,US,etf,Energy sector
+XLV,US,etf,Health care sector

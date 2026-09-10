@@ -15,3 +15,8 @@ logs/
 
 # db-service data (submodule already ignores its own build/data dirs, but be defensive)
 db-service/data/
+
+# EODHD fetch cache: 178MB of regenerable vendor data, rebuilt by --fetch.
+# data/universe/*.csv IS version-controlled on purpose - see the survivorship
+# note in scripts/ingest_backtest_universe.py.
+data/raw/
