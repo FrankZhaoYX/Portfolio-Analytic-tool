@@ -15,6 +15,7 @@ followed across modules by grepping one id.
 """
 import logging
 import logging.handlers
+import re
 import sys
 from contextvars import ContextVar
 from pathlib import Path
@@ -40,6 +41,34 @@ class _RequestIdFilter(logging.Filter):
         return True
 
 
+# Vendor keys travel in the query string, and httpx logs every request URL at
+# INFO. Without this the EODHD key lands in plaintext in logs/*.log on every
+# run - `logs/` is gitignored so it never reaches the repo, but the key is not
+# meant to sit on disk in the clear either.
+_SECRET_QS = re.compile(r"(api_token|api_key|apikey|token|access_key)=([^&\s\"'\)]+)", re.I)
+
+
+class _SecretRedactionFilter(logging.Filter):
+    """Strips credential query-string values out of every record.
+
+    httpx passes the URL as a log *arg*, not inside the message, so scrubbing
+    `record.msg` alone would miss it entirely. Rendering the record first and
+    clearing the args is what makes the redaction actually cover the URL.
+    """
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        try:
+            rendered = record.getMessage()
+        except Exception:  # a broken format string is not worth losing the line over
+            return True
+        if "=" in rendered:
+            redacted = _SECRET_QS.sub(r"\1=***REDACTED***", rendered)
+            if redacted != rendered:
+                record.msg = redacted
+                record.args = None
+        return True
+
+
 def setup_logging(log_file: str = "backend.log") -> None:
     """Configure root logging. Idempotent - safe to call more than once."""
     global _configured
@@ -49,6 +78,7 @@ def setup_logging(log_file: str = "backend.log") -> None:
     level = getattr(logging, settings.log_level.upper(), logging.INFO)
     formatter = logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT)
     request_id_filter = _RequestIdFilter()
+    redaction_filter = _SecretRedactionFilter()
 
     root = logging.getLogger()
     root.setLevel(level)
@@ -60,6 +90,7 @@ def setup_logging(log_file: str = "backend.log") -> None:
     console = logging.StreamHandler(sys.stderr)
     console.setFormatter(formatter)
     console.addFilter(request_id_filter)
+    console.addFilter(redaction_filter)
     root.addHandler(console)
 
     log_dir = Path(settings.log_dir)
@@ -70,6 +101,7 @@ def setup_logging(log_file: str = "backend.log") -> None:
         )
         file_handler.setFormatter(formatter)
         file_handler.addFilter(request_id_filter)
+        file_handler.addFilter(redaction_filter)
         root.addHandler(file_handler)
     except OSError as exc:  # read-only fs, permissions, etc - console still works
         root.warning("File logging disabled (%s): %s", log_dir, exc)
